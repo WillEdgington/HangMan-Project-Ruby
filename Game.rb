@@ -50,6 +50,12 @@ class Game
     @found = Set.new()
   end
 
+  def deleteGame
+    fileDir = "saved"
+    path = File.join(fileDir, "#{@file}.json")
+    File.delete(path) if File.exist?(path)
+  end
+
   def randomWord
     # chomp: true removes \n from the end of each line
     words = File.readlines('data/word.txt', chomp: true)
@@ -90,6 +96,7 @@ class Game
       end
       checkLetter(char)
     end
+    deleteGame # Game finished so delete file
     if @guessesLeft==0
       puts "\n\nYou have ran out of guesses."
     else
@@ -109,15 +116,16 @@ class Game
 end
 
 game=Game.new("Will")
-game.play
-# game.displayBoard
-# game.checkLetter("i")
-# game.displayBoard
-# game.checkLetter("a")
-# game.displayBoard
-# game.checkLetter("e")
-# game.displayBoard
-# game.checkLetter("o")
-# game.displayBoard
-# game.checkLetter("u")
-# game.saveGame
+# game.play
+game.displayBoard
+game.checkLetter("i")
+game.displayBoard
+game.checkLetter("a")
+game.displayBoard
+game.checkLetter("e")
+game.displayBoard
+game.checkLetter("o")
+game.displayBoard
+game.checkLetter("u")
+# game.deleteGame
+game.saveGame
