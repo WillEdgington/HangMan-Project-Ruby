@@ -1,18 +1,47 @@
-class Game
-  def initialize(file)
-    @file=file
-    loadGame
-  end
+require 'json'
+require_relative 'secure'
 
-  def initialize()
-    @file=nil
-    newGame
+class Game
+  def initialize(file=nil)
+    @file=file
+    @file.nil? ? newGame : loadGame
   end
 
   def loadGame
+    fileDir="saved"
+    path=File.join(fileDir, "#{@file}.json")
+    if File.exist?(path)
+      data=JSON.parse(File.read(path))
+      @guessesLeft=data["guessesLeft"]
+      @word=Secure.decrypt(data["word"], @guessesLeft)
+      @found=Set.new(data["found"])
+    else
+      puts "No saved game found. Starting a new game"
+      newGame
+    end
   end
 
   def saveGame
+    fileDir="saved"
+    Dir.mkdir(fileDir) unless Dir.exist?(fileDir)
+    if @file.nil?
+      getFileName
+    end
+
+    data = {
+      word: Secure.encrypt(@word,@guessesLeft),
+      guessesLeft: @guessesLeft,
+      found: @found.to_a
+    }
+    path=File.join(fileDir, "#{@file}.json")
+    File.write(path, JSON.pretty_generate(data))
+    puts "\nGame saved to #{path}"
+  end
+
+  def getFileName
+    puts "\nNo current file for this game."
+    print "Create a file name: "
+    @file=gets.chomp
   end
 
   def newGame
@@ -79,7 +108,7 @@ class Game
   end
 end
 
-game=Game.new()
+game=Game.new("Will")
 game.play
 # game.displayBoard
 # game.checkLetter("i")
@@ -91,3 +120,4 @@ game.play
 # game.checkLetter("o")
 # game.displayBoard
 # game.checkLetter("u")
+# game.saveGame
