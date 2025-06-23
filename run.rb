@@ -1,5 +1,5 @@
 require_relative 'UI'
 
-ui = ui.new()
+ui = UI.new() # create instance of user interface
 
-ui.start
+ui.start # start interface
